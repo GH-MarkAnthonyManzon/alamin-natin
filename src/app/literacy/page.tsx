@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { literacyTopics } from "@/lib/data";
+import { literacyTopics } from "@/lib/literacy-data";
 
 export default function LiteracyPage() {
   return (

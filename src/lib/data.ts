@@ -2,56 +2,6 @@ import type { Candidate } from './types';
 
 export const candidates: Candidate[] = [
   {
-    id: 'gabriela-silang',
-    fullName: 'Gabriela Silang',
-    positionSought: 'Senator',
-    politicalAffiliation: 'Lakas ng Kababaihan',
-    imageUrlId: 'candidate-4',
-    education: [
-      {
-        degree: 'Bachelor of Science in Community Development',
-        institution: 'University of the Philippines Los Baños',
-        year: '2005',
-        source: { label: 'UPLB Registrar', url: '#' },
-      },
-    ],
-    careerTimeline: [
-      {
-        date: '2013-2022',
-        title: 'Party-list Representative',
-        description: 'Represented the women\'s sector, authoring bills on gender equality and rural development.',
-        isMilestone: true,
-        source: { label: 'Congress.gov.ph', url: '#' },
-      },
-      {
-        date: '2006-2012',
-        title: 'Community Organizer',
-        description: 'Worked with various NGOs focusing on women\'s rights and empowerment.',
-        isMilestone: false,
-        source: { label: 'NGO Network Records', url: '#' },
-      },
-    ],
-    platforms: [
-      {
-        title: 'Women\'s Economic Empowerment',
-        description: 'Pushes for laws that provide greater economic opportunities for women, including access to capital and training.',
-        source: { label: 'Campaign Website', url: '#' },
-      },
-    ],
-    controversies: [],
-    promises: [
-      {
-        promise: 'To establish a national hotline and support system for victims of domestic violence.',
-        relatedActions: [
-          {
-            description: 'Filed a bill in 2019 to create a national domestic violence support system, which reached a second reading.',
-            source: { label: 'House Bill No. 5432', url: '#' }
-          }
-        ]
-      }
-    ]
-  },
-  {
     id: 'benhur-abalos',
     fullName: 'Benjamin "Benhur" Abalos Jr.',
     positionSought: 'Senator',
@@ -140,7 +90,7 @@ export const candidates: Candidate[] = [
     fullName: 'Imee Marcos',
     positionSought: 'Senator',
     politicalAffiliation: 'Unknown',
-    imageUrlId: 'candidate-14',
+imageUrlId: 'candidate-14',
     education: [],
     careerTimeline: [],
     platforms: [],
@@ -430,7 +380,7 @@ export const candidates: Candidate[] = [
     politicalAffiliation: 'Unknown',
     imageUrlId: 'candidate-44',
     education: [],
-    careerTimeline: [],
+careerTimeline: [],
     platforms: [],
     controversies: [],
     promises: [],
@@ -530,28 +480,65 @@ export const candidates: Candidate[] = [
     platforms: [],
     controversies: [],
     promises: [],
+  },
+  {
+    id: 'willie-revillame',
+    fullName: 'Wilfredo "Willie" Revillame',
+    positionSought: 'Senator',
+    politicalAffiliation: 'Unknown',
+    imageUrlId: 'candidate-54',
+    education: [],
+    careerTimeline: [],
+    platforms: [],
+    controversies: [],
+    promises: [],
+  },
+  {
+    id: 'vic-rodriguez',
+    fullName: 'Victor "Vic" Rodriguez',
+    positionSought: 'Senator',
+    politicalAffiliation: 'Unknown',
+    imageUrlId: 'candidate-55',
+    education: [],
+    careerTimeline: [],
+    platforms: [],
+    controversies: [],
+    promises: [],
+  },
+  {
+    id: 'nur-ana-sahidulla',
+    fullName: 'Nur-Ana Indanan Sahidulla',
+    positionSought: 'Senator',
+politicalAffiliation: 'Unknown',
+    imageUrlId: 'candidate-56',
+    education: [],
+    careerTimeline: [],
+    platforms: [],
+    controversies: [],
+    promises: [],
+  },
+  {
+    id: 'phillip-salvador',
+    fullName: 'Phillip Reyes Salvador',
+    positionSought: 'Senator',
+    politicalAffiliation: 'Unknown',
+    imageUrlId: 'candidate-57',
+    education: [],
+    careerTimeline: [],
+    platforms: [],
+    controversies: [],
+    promises: [],
+  },
+  {
+    id: 'chavit-singson',
+    fullName: 'Luis "Chavit" Singson',
+    positionSought: 'Senator',
+    politicalAffiliation: 'Unknown',
+    imageUrlId: 'candidate-58',
+    education: [],
+    careerTimeline: [],
+    platforms: [],
+    controversies: [],
+    promises: [],
   }
-];
-
-export const literacyTopics = [
-  {
-    id: 'role-comelec',
-    title: 'What is the role of COMELEC?',
-    content: 'The Commission on Elections (COMELEC) is the principal government agency tasked by the Constitution to enforce and administer all laws and regulations concerning the conduct of regular and special elections. Its primary role is to ensure free, orderly, honest, peaceful, and credible elections.',
-  },
-  {
-    id: 'powers-executive',
-    title: 'What are the powers of the President and Vice President?',
-    content: 'The President is the head of state and government, and serves as the commander-in-chief of the Armed Forces. Key powers include executing laws, appointing officials, and conducting foreign policy. The Vice President\'s main role is to succeed the President in case of death, disability, or resignation. They may also be appointed to a cabinet position by the President.',
-  },
-  {
-    id: 'how-elections-work',
-    title: 'How do Philippine national elections work?',
-    content: 'National elections are held every six years. Voters cast their ballots for President, Vice President, Senators, and local officials. The Philippines uses an automated election system, where votes are cast on ballots, fed into vote-counting machines, and electronically transmitted for canvassing.',
-  },
-  {
-    id: 'read-records',
-    title: 'How do I read a candidate\'s record critically?',
-    content: 'When evaluating a candidate, look for consistency between their promises and past actions. Check the sources of information—are they from official government sites, reputable news organizations, or court records? Be aware of the difference between allegations and proven facts. A long track record in public service can provide more data points for evaluation.',
-  },
 ];
