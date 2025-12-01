@@ -41,6 +41,66 @@
       "description": "Placeholder for candidate Apolinario Mabini",
       "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwcG9ydHJhaXQlMjBzbWlsaW5nfGVufDB8fHx8MTc2NDU3MzQxNnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "male portrait"
+    },
+    {
+      "id": "candidate-7",
+      "description": "Placeholder for candidate Benhur Abalos",
+      "imageUrl": "https://images.unsplash.com/photo-1617568091860-bebbdca54f68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwcG9saXRpY2lhbnxlbnwwfHx8fDE3NjQ1OTUwNDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male politician"
+    },
+    {
+      "id": "candidate-8",
+      "description": "Placeholder for candidate Bam Aquino",
+      "imageUrl": "https://images.unsplash.com/photo-1598801943872-d5299d319eda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYWxlJTIwcG9saXRpY2lhbnxlbnwwfHx8fDE3NjQ1OTUwNDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male politician"
+    },
+    {
+      "id": "candidate-9",
+      "description": "Placeholder for candidate Abby Binay",
+      "imageUrl": "https://images.unsplash.com/photo-1629145185588-9003cd881dfb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBwb2xpdGljaWFufGVufDB8fHx8MTc2NDU5NTA0NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female politician"
+    },
+    {
+      "id": "candidate-10",
+      "description": "Placeholder for candidate Pia Cayetano",
+      "imageUrl": "https://images.unsplash.com/photo-1649819697232-e9a257444192?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmZW1hbGUlMjBwb2xpdGljaWFufGVufDB8fHx8MTc2NDU5NTA0NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female politician"
+    },
+    {
+      "id": "candidate-11",
+      "description": "Placeholder for candidate Ronald 'Bato' Dela Rosa",
+      "imageUrl": "https://images.unsplash.com/photo-1595628423365-cd4e640edecc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYWxlJTIwcG9saXRpY2lhbnxlbnwwfHx8fDE3NjQ1OTUwNDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male politician"
+    },
+    {
+      "id": "candidate-12",
+      "description": "Placeholder for candidate Christopher 'Bong' Go",
+      "imageUrl": "https://images.unsplash.com/photo-1645106281521-86da01d1031d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYWxlJTIwcG9saXRpY2lhbnxlbnwwfHx8fDE3NjQ1OTUwNDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male politician"
+    },
+    {
+      "id": "candidate-13",
+      "description": "Placeholder for candidate Ping Lacson",
+      "imageUrl": "https://images.unsplash.com/photo-1625502664816-4938b1d0d685?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYWxlJTIwcG9saXRpY2lhbnxlbnwwfHx8fDE3NjQ1OTUwNDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male politician"
+    },
+    {
+      "id": "candidate-14",
+      "description": "Placeholder for candidate Imee Marcos",
+      "imageUrl": "https://images.unsplash.com/photo-1620333198023-1fb846888d25?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmZW1hbGUlMjBwb2xpdGljaWFufGVufDB8fHx8MTc2NDU5NTA0NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female politician"
+    },
+    {
+      "id": "candidate-15",
+      "description": "Placeholder for candidate Manny Pacquiao",
+      "imageUrl": "https://images.unsplash.com/photo-1718733869597-efc93fac657d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFsZSUyMGF0aGxldGV8ZW58MHx8fHwxNzY0NTg2MjAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male athlete"
+    },
+    {
+      "id": "candidate-16",
+      "description": "Placeholder for candidate Tito Sotto",
+      "imageUrl": "https://images.unsplash.com/photo-1762160767253-c050a10f9066?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYWxlJTIwY2VsZWJyaXR5fGVufDB8fHx8MTc2NDU5NTA0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male celebrity"
     }
   ]
 }
