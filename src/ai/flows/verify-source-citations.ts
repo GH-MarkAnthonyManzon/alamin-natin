@@ -23,8 +23,8 @@ export type VerifySourceCitationsInput = z.infer<
 
 const VerifySourceCitationsOutputSchema = z.object({
   originalSources: z
-    .array(z.string())
-    .describe('A list of original sources found for the citation text.'),
+    .array(z.string().url())
+    .describe('A list of URL strings pointing to original sources found for the citation text.'),
 });
 export type VerifySourceCitationsOutput = z.infer<
   typeof VerifySourceCitationsOutputSchema
@@ -40,10 +40,10 @@ const prompt = ai.definePrompt({
   name: 'verifySourceCitationsPrompt',
   input: {schema: VerifySourceCitationsInputSchema},
   output: {schema: VerifySourceCitationsOutputSchema},
-  prompt: `You are an AI assistant specializing in verifying source citations.
+  prompt: `You are an AI assistant that ONLY returns URLs.
 
-  Given the following citation text, find a list of original sources to ensure accuracy and prevent the inclusion of opinion-based content.
-  Return ONLY the original sources found.
+  Given the following citation text, find a list of original source URLs.
+  Return ONLY a list of URL strings. Do not include any other text, explanations, or formatting.
 
   Citation Text: {{{citationText}}}
   `,
