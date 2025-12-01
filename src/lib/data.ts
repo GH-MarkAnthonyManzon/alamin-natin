@@ -237,6 +237,112 @@ export const candidates: Candidate[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'andres-bonifacio',
+    fullName: 'Andres "Andy" Bonifacio',
+    positionSought: 'Vice President',
+    politicalAffiliation: 'Katipunan Party',
+    imageUrlId: 'candidate-5',
+    education: [
+      {
+        degree: 'Bachelor of Arts in Public Administration',
+        institution: 'National College of Public Administration and Governance',
+        year: '2000',
+        source: { label: 'NCPAG Records', url: '#' },
+      },
+    ],
+    careerTimeline: [
+      {
+        date: '2016-2022',
+        title: 'Congressman, Tondo District',
+        description: 'Authored bills related to labor rights and urban poor housing.',
+        isMilestone: true,
+        source: { label: 'Congress Archives', url: '#' },
+      },
+      {
+        date: '2005-2015',
+        title: 'Labor Union President',
+        description: 'Led a national union for factory workers, advocating for better wages and working conditions.',
+        isMilestone: true,
+        source: { label: 'DOLE Records', url: '#' },
+      },
+    ],
+    platforms: [
+      {
+        title: 'Workers\' Rights and Welfare',
+        description: 'Aims to end contractualization and increase the national minimum wage.',
+        source: { label: 'Labor Day Speech', url: '#' },
+      },
+    ],
+    controversies: [],
+    promises: [
+      {
+        promise: 'To certify a bill on security of tenure as urgent within the first 100 days.',
+        relatedActions: [
+          {
+            description: 'Consistently voted against measures seen as detrimental to labor interests during his time in Congress.',
+            source: { label: 'Congressional Voting Record', url: '#' }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'apolinario-mabini',
+    fullName: 'Apolinario "Pol" Mabini',
+    positionSought: 'President',
+    politicalAffiliation: 'Reporma Pilipinas',
+    imageUrlId: 'candidate-6',
+    education: [
+      {
+        degree: 'Bachelor of Laws',
+        institution: 'University of Santo Tomas',
+        year: '1988',
+        source: { label: 'UST Law', url: '#' },
+      },
+      {
+        degree: 'Master of Public Policy',
+        institution: 'Harvard Kennedy School',
+        year: '1992',
+        source: { label: 'Harvard Records', url: '#' },
+      },
+    ],
+    careerTimeline: [
+      {
+        date: '2013-2019',
+        title: 'Secretary of Foreign Affairs',
+        description: 'Served as the country\'s top diplomat, strengthening international relations.',
+        isMilestone: true,
+        source: { label: 'DFA Archives', url: '#' },
+      },
+      {
+        date: '2001-2010',
+        title: 'Legal Counsel',
+        description: 'Worked as chief legal counsel for a multi-national technology firm.',
+        isMilestone: false,
+        source: { label: 'Company Profile', url: '#' },
+      },
+    ],
+    platforms: [
+      {
+        title: 'Good Governance and Rule of Law',
+        description: 'Advocates for judicial reform and strengthening of democratic institutions.',
+        source: { label: 'IBP National Convention Speech', url: '#' },
+      },
+    ],
+    controversies: [],
+    promises: [
+      {
+        promise: 'To appoint a non-political, career professional to head the Department of Justice.',
+        relatedActions: [
+          {
+            description: 'As DFA secretary, implemented a merit-based system for ambassadorial appointments.',
+            source: { label: 'DFA Department Order', url: '#' }
+          }
+        ]
+      }
+    ]
   }
 ];
 

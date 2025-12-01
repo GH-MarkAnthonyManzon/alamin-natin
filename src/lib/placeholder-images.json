@@ -29,6 +29,18 @@
       "description": "Placeholder for candidate Gabriela Silang",
       "imageUrl": "https://images.unsplash.com/photo-1600275669439-14e40452d20b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHByb2Zlc3Npb25hbHxlbnwwfHx8fDE3NjQ1MjQwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman professional"
+    },
+    {
+      "id": "candidate-5",
+      "description": "Placeholder for candidate Andres Bonifacio",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYWxlJTIwcHJvZmVzc2lvbmFsfGVufDB8fHx8MTc2NDU3MzM0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male professional"
+    },
+    {
+      "id": "candidate-6",
+      "description": "Placeholder for candidate Apolinario Mabini",
+      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYWxlJTIwcG9ydHJhaXQlMjBzbWlsaW5nfGVufDB8fHx8MTc2NDU3MzQxNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male portrait"
     }
   ]
 }
