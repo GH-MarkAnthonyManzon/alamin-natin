@@ -11,6 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ragFlow } from './rag-flow';
 
 const VerifySourceCitationsInputSchema = z.object({
   citationText: z
@@ -33,7 +34,9 @@ export type VerifySourceCitationsOutput = z.infer<
 export async function verifySourceCitations(
   input: VerifySourceCitationsInput
 ): Promise<VerifySourceCitationsOutput> {
-  return verifySourceCitationsFlow(input);
+  const anwser = await ragFlow(input.citationText)
+  
+  return anwser as VerifySourceCitationsOutput;
 }
 
 const prompt = ai.definePrompt({

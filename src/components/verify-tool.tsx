@@ -59,25 +59,23 @@ export function VerifyTool() {
               <AlertTitle>Result</AlertTitle>
               <AlertDescription>
                 {state.message}
-              </AlertDescription>
+              </Aler tDescription>
             </Alert>
         )}
 
-        {state.sources && state.sources.length > 0 && (
+        {state.sources && (state.sources as string).length > 0 && (
           <div className="mt-6">
             <h3 className="font-semibold mb-2">Potential Original Sources:</h3>
             <div className="space-y-2">
-              {state.sources.map((source, index) => (
-                <Alert key={index}>
+                <Alert>
                   <Terminal className="h-4 w-4" />
-                  <AlertTitle>Source {index + 1}</AlertTitle>
+                  <AlertTitle>Source</AlertTitle>
                   <AlertDescription>
-                     <Link href={source} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
-                       {source}
+                     <Link href={state.sources as string} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                       {state.sources as string}
                      </Link>
                   </AlertDescription>
                 </Alert>
-              ))}
             </div>
           </div>
         )}

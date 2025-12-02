@@ -8,7 +8,7 @@ const VerifyCitationSchema = z.object({
 });
 
 type VerifyState = {
-  sources?: string[];
+  sources?: string[] | string;
   error?: string;
   message?: string;
 };
@@ -29,8 +29,9 @@ export async function verifyCitationAction(
   
   try {
     const result = await verifySourceCitations({ citationText: validatedFields.data.citationText });
-    if (result.originalSources && result.originalSources.length > 0) {
-      return { sources: result.originalSources, message: "Sources found successfully." };
+    console.log('result', result)
+    if (result) {
+      return { sources: result as string, message: "Sources found successfully." };
     } else {
       return { message: "No original sources could be found for the provided text." };
     }
