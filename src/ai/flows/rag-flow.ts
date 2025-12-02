@@ -41,23 +41,6 @@ export async function ragFlow(question: string): Promise<string[]> {
   );
   const retriever = vectorStore.asRetriever();
 
-  const prompt = ChatPromptTemplate.fromMessages([
-    SystemMessagePromptTemplate.fromTemplate(
-      'Answer the question based only on the following context:\n{context}'
-    ),
-    HumanMessagePromptTemplate.fromTemplate('{question}'),
-  ]);
-
-  const chain = RunnableSequence.from([
-    {
-      context: retriever.pipe(formatDocumentsAsString),
-      question: new RunnablePassthrough(),
-    },
-    prompt,
-    model,
-    new StringOutputParser(),
-  ]);
-
   const relevantDocs = await retriever.getRelevantDocuments(question);
   
   if (relevantDocs && relevantDocs.length > 0) {
