@@ -53,7 +53,7 @@ export function VerifyTool() {
             </Alert>
         )}
 
-        {state.message && !state.sources?.length && (
+        {state.message && (!state.sources || (Array.isArray(state.sources) && state.sources.length === 0)) && (
             <Alert className="mt-4">
               <CheckCircle className="h-4 w-4" />
               <AlertTitle>Result</AlertTitle>
@@ -63,19 +63,21 @@ export function VerifyTool() {
             </Alert>
         )}
 
-        {state.sources && (state.sources as string).length > 0 && (
+        {state.sources && Array.isArray(state.sources) && state.sources.length > 0 && (
           <div className="mt-6">
             <h3 className="font-semibold mb-2">Potential Original Sources:</h3>
             <div className="space-y-2">
-                <Alert>
+              {state.sources.map((source, index) => (
+                <Alert key={index}>
                   <Terminal className="h-4 w-4" />
                   <AlertTitle>Source</AlertTitle>
                   <AlertDescription>
-                     <Link href={state.sources as string} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
-                       {state.sources as string}
+                     <Link href={source} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                       {source}
                      </Link>
                   </AlertDescription>
                 </Alert>
+              ))}
             </div>
           </div>
         )}
