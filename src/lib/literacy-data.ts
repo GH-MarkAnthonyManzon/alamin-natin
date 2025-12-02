@@ -8,7 +8,7 @@ export const literacyTopics = [
   },
   {
     id: "topic-2",
-    title: "How does the election process work?",
+    title: "How does the election process work? NIGGA",
     content:
       "Philippine national elections are held every three years. Voters cast their ballots for candidates at various levels, from local officials to national positions like Senators and the President. The Commission on Elections (COMELEC) oversees the entire process, from voter registration to the counting of votes and proclamation of winners. Votes are typically cast electronically using automated vote-counting machines.",
   },
