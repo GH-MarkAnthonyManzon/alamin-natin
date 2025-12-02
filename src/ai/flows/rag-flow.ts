@@ -1,7 +1,6 @@
 'use server';
 import { Document } from '@langchain/core/documents';
 import { HNSWLib } from '@langchain/community/vectorstores/hnswlib';
-import { anyscale, gemini, googleAI } from 'genkit/x/langchain';
 import {
   ChatGoogleGenerativeAI,
   GoogleGenerativeAIEmbeddings,
@@ -17,11 +16,6 @@ import {
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
 } from '@langchain/core/prompts';
-import { YoutubeLoader } from 'langchain/document_loaders/web/youtube';
-import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
-import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { JSONLoader } from 'langchain/document_loaders/fs/json';
-import { CSVLoader } from 'langchain/document_loaders/fs/csv';
 import { CheerioWebBaseLoader } from 'langchain/document_loaders/web/cheerio';
 
 const model = new ChatGoogleGenerativeAI({
@@ -36,7 +30,7 @@ async function loadWebDocument(url: string) {
   return docs;
 }
 
-export async function ragFlow(question: string) {
+export async function ragFlow(question: string): Promise<string[]> {
   const webDocs = await loadWebDocument(
     'https://www.rappler.com/philippines/elections/list-senatorial-candidates-approved-comelec-2025/'
   );
@@ -66,5 +60,28 @@ export async function ragFlow(question: string) {
 
   const result = await chain.invoke(question);
 
-  return result;
+  // For now, we are not getting documents back.
+  // This is a placeholder for where we would extract source URLs.
+  // Since the result is just a string, we will return an empty array if it's not a URL.
+  const isUrl = (text: string) => {
+    try {
+      new URL(text);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  if (result && isUrl(result)) {
+    return [result];
+  }
+
+  // A more robust implementation would be to return the source documents from the retriever.
+  // For now, let's return a hardcoded link if no URL is found in the direct response.
+  const relevantDocs = await retriever.getRelevantDocuments(question);
+  if (relevantDocs && relevantDocs.length > 0) {
+    return relevantDocs.map(doc => doc.metadata.source).filter((source, index, self) => self.indexOf(source) === index);
+  }
+
+  return [];
 }

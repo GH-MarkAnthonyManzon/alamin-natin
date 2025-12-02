@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal, CheckCircle, AlertCircle } from "lucide-react";
+import { Terminal, CheckCircle, AlertCircle, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 function SubmitButton() {
@@ -53,7 +53,7 @@ export function VerifyTool() {
             </Alert>
         )}
 
-        {state.message && (!state.sources || (Array.isArray(state.sources) && state.sources.length === 0)) && (
+        {state.message && (!state.sources || state.sources.length === 0) && (
             <Alert className="mt-4">
               <CheckCircle className="h-4 w-4" />
               <AlertTitle>Result</AlertTitle>
@@ -63,18 +63,23 @@ export function VerifyTool() {
             </Alert>
         )}
 
-        {state.sources && Array.isArray(state.sources) && state.sources.length > 0 && (
+        {state.sources && state.sources.length > 0 && (
           <div className="mt-6">
             <h3 className="font-semibold mb-2">Potential Original Sources:</h3>
             <div className="space-y-2">
               {state.sources.map((source, index) => (
                 <Alert key={index}>
                   <Terminal className="h-4 w-4" />
-                  <AlertTitle>Source</AlertTitle>
+                  <AlertTitle className="flex items-center justify-between">
+                    Source Found
+                    <Link href={source} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                       <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </AlertTitle>
                   <AlertDescription>
-                     <Link href={source} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">
+                     <p className="truncate">
                        {source}
-                     </Link>
+                     </p>
                   </AlertDescription>
                 </Alert>
               ))}

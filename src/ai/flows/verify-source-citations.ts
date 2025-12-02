@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow for verifying source citations in candidate profiles.
+ * @fileOverview This file defines a Genkit flow for verifying source citations.
  *
  * It includes:
  * - verifySourceCitations - A function to verify source citations.
@@ -34,32 +34,7 @@ export type VerifySourceCitationsOutput = z.infer<
 export async function verifySourceCitations(
   input: VerifySourceCitationsInput
 ): Promise<VerifySourceCitationsOutput> {
-  const anwser = await ragFlow(input.citationText)
+  const sources = await ragFlow(input.citationText)
   
-  return anwser as VerifySourceCitationsOutput;
+  return { originalSources: sources };
 }
-
-const prompt = ai.definePrompt({
-  name: 'verifySourceCitationsPrompt',
-  input: {schema: VerifySourceCitationsInputSchema},
-  output: {schema: VerifySourceCitationsOutputSchema},
-  prompt: `You are an AI assistant that ONLY returns URLs.
-
-  Given the following citation text, find a list of original source URLs.
-  Return ONLY a list of URL strings. Do not include any other text, explanations, or formatting.
-
-  Citation Text: {{{citationText}}}
-  `,
-});
-
-const verifySourceCitationsFlow = ai.defineFlow(
-  {
-    name: 'verifySourceCitationsFlow',
-    inputSchema: VerifySourceCitationsInputSchema,
-    outputSchema: VerifySourceCitationsOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
