@@ -59,7 +59,7 @@ export function VerifyTool() {
               <AlertTitle>Result</AlertTitle>
               <AlertDescription>
                 {state.message}
-              </Aler tDescription>
+              </AlertDescription>
             </Alert>
         )}
 
