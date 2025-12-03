@@ -26,12 +26,14 @@ import { Timeline, TimelineItem } from "@/components/timeline";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 
-export default function CandidateProfilePage({
+export default async function CandidateProfilePage({ //added async
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>; //params: { id: string };
 }) {
-  const candidate = candidates.find((c) => c.id === params.id);
+  const { id } = await params; // added
+
+  const candidate = candidates.find((c) => c.id === id); //removed params 
 
   if (!candidate) {
     notFound();
