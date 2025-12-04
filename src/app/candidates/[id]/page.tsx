@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { candidates } from "@/lib/data";
+import { getCandidateById } from "@/lib/supabase";
 import {
   Card,
   CardContent,
@@ -14,239 +14,152 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import {
-  Briefcase,
   GraduationCap,
-  Gavel,
-  CheckSquare,
   FileText,
-  Link as LinkIcon,
   User,
+  Briefcase,
+  AlertCircle,
 } from "lucide-react";
-import { Timeline, TimelineItem } from "@/components/timeline";
-import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
 
-export default async function CandidateProfilePage({ //added async
+export default async function CandidateProfilePage({
   params,
 }: {
-  params: Promise<{ id: string }>; //params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params; // added
+  const { id } = await params;
 
-  const candidate = candidates.find((c) => c.id === id); //removed params 
+  const candidate = await getCandidateById(id);
 
   if (!candidate) {
     notFound();
   }
 
+   // DEBUG: Log the candidate data
+  console.log('Candidate data:', JSON.stringify(candidate, null, 2));
+  console.log('Education type:', typeof candidate.education);
+  console.log('Education value:', candidate.education);
+  
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <header className="flex flex-col md:flex-row items-start gap-8 mb-12">
         <div className="relative w-48 h-48 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-muted">
-            <User className="w-32 h-32 text-muted-foreground" />
+          <User className="w-32 h-32 text-muted-foreground" />
         </div>
         <div className="pt-4">
           <h1 className="text-4xl md:text-5xl font-bold font-headline">
-            {candidate.fullName}
+            {candidate.full_name}
           </h1>
           <p className="text-xl text-primary mt-1">
-            For {candidate.positionSought}
+            For {candidate.position_sought}
           </p>
           <p className="text-lg text-muted-foreground mt-2">
-            {candidate.politicalAffiliation}
+            {candidate.political_affiliation}
           </p>
         </div>
       </header>
 
       <Tabs defaultValue="overview">
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="timeline">Track Record</TabsTrigger>
-          <TabsTrigger value="promises">Promises vs. Past</TabsTrigger>
+          <TabsTrigger value="details">Additional Details</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="overview" className="mt-6">
           <div className="grid gap-8 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="text-primary" />
-                  Education
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  {candidate.education.map((edu, index) => (
-                    <li key={index}>
-                      <p className="font-semibold">{edu.degree}</p>
-                      <p className="text-muted-foreground">
-                        {edu.institution}, {edu.year}
-                      </p>
-                      <Link
-                        href={edu.source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                      >
-                        <LinkIcon className="w-3 h-3" />
-                        {edu.source.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            {candidate.education && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <GraduationCap className="text-primary" />
+                    Education
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {typeof candidate.education === 'string' 
+                      ? candidate.education 
+                      : Array.isArray(candidate.education) && candidate.education.length > 0
+                      ? candidate.education.join('\n\n')
+                      : 'No education information available.'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="text-primary" />
-                  Stated Platforms
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  {candidate.platforms.map((platform, index) => (
-                    <li key={index}>
-                      <p className="font-semibold">{platform.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {platform.description}
-                      </p>
-                      <Link
-                        href={platform.source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                      >
-                        <LinkIcon className="w-3 h-3" />
-                        {platform.source.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            {candidate.platforms && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="text-primary" />
+                    Platforms & Promises
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {typeof candidate.platforms === 'string' 
+                      ? candidate.platforms 
+                      : Array.isArray(candidate.platforms) && candidate.platforms.length > 0
+                      ? candidate.platforms.join('\n\n')
+                      : 'No platform information available.'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
 
-            {candidate.controversies.length > 0 && (
+            {candidate.career_timeline && (
               <Card className="md:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Gavel className="text-primary" />
-                    Notable Controversies / Cases
+                    <Briefcase className="text-primary" />
+                    Career Timeline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {typeof candidate.career_timeline === 'string' 
+                      ? candidate.career_timeline 
+                      : Array.isArray(candidate.career_timeline) && candidate.career_timeline.length > 0
+                      ? candidate.career_timeline.join('\n\n')
+                      : 'No career timeline available.'}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {candidate.past_behaviors && (
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertCircle className="text-primary" />
+                    Past Behaviors
                   </CardTitle>
                   <CardDescription>
                     Based on publicly available records.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-4">
-                    {candidate.controversies.map((con, index) => (
-                      <li key={index}>
-                        <p className="font-semibold">{con.title}</p>
-                        <p className="text-sm text-muted-foreground my-1">
-                          {con.summary}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-semibold">Outcome:</span>{" "}
-                          {con.outcome}
-                        </p>
-                        <Link
-                          href={con.source.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                        >
-                          <LinkIcon className="w-3 h-3" />
-                          {con.source.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {typeof candidate.past_behaviors === 'string' 
+                      ? candidate.past_behaviors 
+                      : Array.isArray(candidate.past_behaviors) && candidate.past_behaviors.length > 0
+                      ? candidate.past_behaviors.join('\n\n')
+                      : 'No past behavior information available.'}
+                  </p>
                 </CardContent>
               </Card>
             )}
           </div>
         </TabsContent>
-        <TabsContent value="timeline" className="mt-6">
+
+        <TabsContent value="details" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Briefcase className="text-primary" />
-                Career Timeline
-              </CardTitle>
-              <CardDescription>
-                A chronological history of positions held and notable actions.
-              </CardDescription>
+              <CardTitle>Additional Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <Timeline>
-                {candidate.careerTimeline.map((item, index) => (
-                  <TimelineItem
-                    key={index}
-                    {...item}
-                    isLast={index === candidate.careerTimeline.length - 1}
-                  />
-                ))}
-              </Timeline>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="promises" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckSquare className="text-primary" />
-                Promise vs. Past Behavior
-              </CardTitle>
-              <CardDescription>
-                Juxtaposing campaign promises with historical actions without
-                interpretation.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {candidate.promises.map((item, index) => (
-                  <div key={index}>
-                    <div className="grid gap-4">
-                      <div>
-                        <h4 className="font-semibold text-lg">
-                          Promise:
-                        </h4>
-                        <p className="italic">"{item.promise}"</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-lg">
-                          Related Historical Actions:
-                        </h4>
-                        {item.relatedActions.length > 0 ? (
-                          <ul className="list-disc pl-5 mt-2 space-y-2 text-muted-foreground">
-                            {item.relatedActions.map((action, actionIdx) => (
-                              <li key={actionIdx}>
-                                {action.description}{" "}
-                                <Link
-                                  href={action.source.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                                >
-                                  <LinkIcon className="w-3 h-3" />
-                                  ({action.source.label})
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-muted-foreground mt-2">
-                            No direct historical actions found in the dataset.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    {index < candidate.promises.length - 1 && (
-                      <Separator className="my-6" />
-                    )}
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">
+                More detailed information will be added here as it becomes available.
+              </p>
             </CardContent>
           </Card>
         </TabsContent>

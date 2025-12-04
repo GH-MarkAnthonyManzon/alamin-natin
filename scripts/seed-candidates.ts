@@ -1,7 +1,27 @@
+import { config } from 'dotenv';
+import { resolve } from 'path';
+import { existsSync } from 'fs';
+
+// Try loading from multiple .env files
+const envFiles = ['.env.local', '.env'];
+for (const file of envFiles) {
+  const envPath = resolve(process.cwd(), file);
+  if (existsSync(envPath)) {
+    console.log(`Loading environment from: ${file}`);
+    config({ path: envPath });
+    break;
+  }
+}
+
 import { createClient } from '@supabase/supabase-js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'csv-parse/sync';
+
+// Debug: Log to verify environment variables are loaded
+console.log('Environment check:');
+console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Found' : 'Missing');
+console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Found' : 'Missing');
 
 // Initialize Supabase client with service role key for admin access
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -9,6 +29,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error('Missing Supabase credentials in environment variables');
+  console.error('NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl || 'MISSING');
+  console.error('SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? 'EXISTS' : 'MISSING');
   process.exit(1);
 }
 
@@ -20,11 +42,11 @@ interface CandidateRow {
   position_sought: string;
   political_affiliation: string;
   image_url_id?: string;
-  education?: any; // JSONB field
-  career_timeline?: any; // JSONB field
-  platforms?: any; // JSONB field
-  controversies?: any; // JSONB field
-  promises?: any; // JSONB field
+  education?: string;
+  career_timeline?: string;
+  platforms?: string;
+  past_behaviors?: string;
+  sources?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -34,11 +56,11 @@ async function seedCandidates() {
     console.log('🌱 Starting database seed...');
 
     // Read CSV file
-    const csvPath = path.join(process.cwd(), 'data', 'candidates.csv');
+    const csvPath = path.join(process.cwd(), 'data', 'SENATOR-DATAS_rows.csv');
     
     if (!fs.existsSync(csvPath)) {
       console.error(`❌ CSV file not found at: ${csvPath}`);
-      console.log('💡 Please create a data/candidates.csv file first');
+      console.log('💡 Please create a data/SENATOR-DATAS_rows.csv file first');
       process.exit(1);
     }
 
@@ -53,7 +75,7 @@ async function seedCandidates() {
 
     console.log(`📄 Found ${records.length} candidates in CSV`);
 
-    // Transform CSV records to database format
+// Transform CSV records to database format
     const candidates: CandidateRow[] = records.map((record: any) => {
       // Parse JSON fields if they exist
       const parseJsonField = (field: string) => {
@@ -66,17 +88,26 @@ async function seedCandidates() {
         }
       };
 
+      const parseSources = (field: string) => {
+        if (!field || field.trim() === '') return {};
+        try {
+          return JSON.parse(field);
+        } catch (e) {
+          return {};
+        }
+      };
+
       return {
         id: record.id || record.full_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         full_name: record.full_name,
-        position_sought: record.position_sought || 'Senator',
+        position_sought: 'Senator',
         political_affiliation: record.political_affiliation || 'Unknown',
         image_url_id: record.image_url_id || '',
-        education: parseJsonField(record.education),
-        career_timeline: parseJsonField(record.career_timeline),
-        platforms: parseJsonField(record.platforms),
-        controversies: parseJsonField(record.controversies),
-        promises: parseJsonField(record.promises),
+        education: record.education || '',
+        career_timeline: record.career_timeline || '',
+        platforms: record.platforms_and_promises || '',
+        past_behaviors: record.past_behaviors || '',
+        sources: record.sources || '',
       };
     });
 
