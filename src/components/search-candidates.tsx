@@ -1,3 +1,4 @@
+// src/components/search-candidates.tsx
 "use client";
 
 import { useState, useMemo } from "react";
@@ -5,13 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import Link from "next/link";
-
-interface Candidate {
-  id: string;
-  full_name: string;
-  position_sought: string;
-  political_affiliation: string;
-}
+import type { Candidate } from "@/lib/supabase";
 
 interface SearchCandidatesProps {
   initialCandidates: Candidate[];
@@ -27,7 +22,8 @@ export function SearchCandidates({ initialCandidates }: SearchCandidatesProps) {
     
     const lowerSearch = searchTerm.toLowerCase();
     return initialCandidates.filter((candidate) =>
-      candidate.full_name.toLowerCase().includes(lowerSearch)
+      candidate.fullName.toLowerCase().includes(lowerSearch) ||
+      candidate.politicalAffiliation.toLowerCase().includes(lowerSearch)
     );
   }, [searchTerm, initialCandidates]);
 
@@ -51,13 +47,13 @@ export function SearchCandidates({ initialCandidates }: SearchCandidatesProps) {
               </CardHeader>
               <CardContent className="p-4">
                 <CardTitle className="text-lg font-bold font-headline">
-                  {candidate.full_name}
+                  {candidate.fullName}
                 </CardTitle>
                 <CardDescription>
-                  For {candidate.position_sought}
+                  For {candidate.positionSought}
                 </CardDescription>
                 <p className="text-sm text-muted-foreground mt-2">
-                  {candidate.political_affiliation}
+                  {candidate.politicalAffiliation}
                 </p>
               </CardContent>
             </Card>

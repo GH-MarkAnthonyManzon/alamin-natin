@@ -1,7 +1,8 @@
+// src/app/compare/page.tsx
 "use client";
 
-import { useState } from "react";
-import { candidates } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { getCandidates, type Candidate } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -13,18 +14,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Label } from "@/components/ui/label";
-import { Candidate } from "@/lib/types";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import { Loader2 } from "lucide-react";
 
 export default function ComparePage() {
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedCandidates, setSelectedCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCandidates() {
+      try {
+        const data = await getCandidates();
+        setCandidates(data);
+      } catch (error) {
+        console.error('Failed to load candidates:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadCandidates();
+  }, []);
 
   const handleCheckboxChange = (candidate: Candidate) => {
     setSelectedCandidates((prev) =>
       prev.some((c) => c.id === candidate.id)
         ? prev.filter((c) => c.id !== candidate.id)
-        : [...prev, candidate]
+        : prev.length < 5 // Limit to 5 for better UI
+        ? [...prev, candidate]
+        : prev
     );
   };
 
@@ -40,36 +58,46 @@ export default function ComparePage() {
     {
       label: "Education",
       getValue: (c: Candidate) => (
-        <ul className="list-disc pl-4 text-xs">
-          {c.education.map((edu, i) => (
-            <li key={i}>{`${edu.degree}, ${edu.institution} (${edu.year})`}</li>
-          ))}
-        </ul>
+        <div className="text-xs whitespace-pre-wrap max-w-md">
+          {c.education || "No information available"}
+        </div>
       ),
     },
     {
-      label: "Career Highlights",
+      label: "Career Timeline",
       getValue: (c: Candidate) => (
-        <ul className="list-disc pl-4 text-xs">
-          {c.careerTimeline
-            .filter((item) => item.isMilestone)
-            .map((item, i) => (
-              <li key={i}>{`${item.title} (${item.date})`}</li>
-            ))}
-        </ul>
+        <div className="text-xs whitespace-pre-wrap max-w-md">
+          {c.careerTimeline || "No information available"}
+        </div>
       ),
     },
     {
       label: "Platforms",
       getValue: (c: Candidate) => (
-         <ul className="list-disc pl-4 text-xs">
-          {c.platforms.map((p, i) => (
-            <li key={i}>{p.title}</li>
-          ))}
-        </ul>
+        <div className="text-xs whitespace-pre-wrap max-w-md">
+          {c.platforms || "No information available"}
+        </div>
+      ),
+    },
+    {
+      label: "Past Behaviors",
+      getValue: (c: Candidate) => (
+        <div className="text-xs whitespace-pre-wrap max-w-md">
+          {c.pastBehaviors || "No information available"}
+        </div>
       ),
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -78,23 +106,32 @@ export default function ComparePage() {
           Compare Candidates
         </h1>
         <p className="text-muted-foreground">
-          Select candidates to compare their background and platforms side-by-side.
+          Select up to 5 candidates to compare their background and platforms side-by-side.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Select Candidates</CardTitle>
+          <CardTitle>
+            Select Candidates {selectedCandidates.length > 0 && `(${selectedCandidates.length}/5)`}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {candidates.map((candidate) => (
             <div key={candidate.id} className="flex items-center space-x-2">
               <Checkbox
                 id={candidate.id}
                 onCheckedChange={() => handleCheckboxChange(candidate)}
                 checked={selectedCandidates.some((c) => c.id === candidate.id)}
+                disabled={
+                  selectedCandidates.length >= 5 &&
+                  !selectedCandidates.some((c) => c.id === candidate.id)
+                }
               />
-              <Label htmlFor={candidate.id} className="text-sm font-medium leading-none cursor-pointer">
+              <Label 
+                htmlFor={candidate.id} 
+                className="text-sm font-medium leading-none cursor-pointer"
+              >
                 {candidate.fullName}
               </Label>
             </div>
@@ -105,32 +142,48 @@ export default function ComparePage() {
       {selectedCandidates.length > 0 && (
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4 font-headline">Comparison</h2>
-           <Card>
-             <ScrollArea>
+          <Card>
+            <ScrollArea className="w-full">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px] font-semibold text-base">Feature</TableHead>
+                    <TableHead className="w-[200px] font-semibold text-base sticky left-0 bg-background z-10">
+                      Feature
+                    </TableHead>
                     {selectedCandidates.map((c) => (
-                      <TableHead key={c.id} className="font-semibold text-base">{c.fullName}</TableHead>
+                      <TableHead key={c.id} className="font-semibold text-base min-w-[300px]">
+                        {c.fullName}
+                      </TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {comparisonRows.map((row) => (
                     <TableRow key={row.label}>
-                      <TableCell className="font-medium">{row.label}</TableCell>
+                      <TableCell className="font-medium sticky left-0 bg-background z-10">
+                        {row.label}
+                      </TableCell>
                       {selectedCandidates.map((c) => (
-                        <TableCell key={c.id}>{row.getValue(c)}</TableCell>
+                        <TableCell key={c.id} className="align-top">
+                          {row.getValue(c)}
+                        </TableCell>
                       ))}
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
               <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-           </Card>
+            </ScrollArea>
+          </Card>
         </div>
+      )}
+
+      {selectedCandidates.length === 0 && (
+        <Card className="mt-8">
+          <CardContent className="py-12 text-center text-muted-foreground">
+            Select candidates above to start comparing their profiles.
+          </CardContent>
+        </Card>
       )}
     </div>
   );
