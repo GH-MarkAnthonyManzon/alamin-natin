@@ -128,7 +128,7 @@ export async function ragFlow(
   question: string, 
   sourceUrl: string,
   skipAnswer: boolean = false // Skip answer generation for speed (used in verification)
-): Promise<{ answer: string; context: Document[] }> { 
+): Promise<{ answer: string; context: Document[]; fullContent?: string }> { //added fullContent 11:27 am 12/5/25
   try {
     console.log('Starting RAG flow for question:', question.substring(0, 50) + '...');
     const webDocs = await loadWebDocument(sourceUrl);
@@ -225,10 +225,13 @@ export async function ragFlow(
       console.log('Skipping answer generation for speed (verification mode)');
     }
 
+    // Combine all document content for AI analysis
+    const fullContent = webDocs.map(doc => doc.pageContent).join('\n\n').substring(0, 5000); //added fullContent 11:29 am 12/5/25
+
     return {
       answer: answer,
       context: context,
-      
+      fullContent: fullContent, //added fullContent 11:29 am 12/5/25
     };
   } catch (error) {
     console.error('Error in ragFlow:', error);
