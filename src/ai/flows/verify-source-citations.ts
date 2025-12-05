@@ -31,6 +31,7 @@ const VerifySourceCitationsOutputSchema = z.object({
     .describe(
       'A list of URL strings where the citation text was actually found.'
     ),
+    fullContent: z.string().optional().describe('Full content for AI analysis'), //added fullContent
 });
 
 export type VerifySourceCitationsOutput = z.infer<
@@ -135,12 +136,18 @@ export async function verifySourceCitations(
         ).map(match => match.source);
 
         console.log('Verified sources:', uniqueSources);
-        return { originalSources: uniqueSources };
+        return { 
+          originalSources: uniqueSources, 
+          fullContent: result.fullContent, //added fullContent
+        };
       }
     }
 
     console.log('No matching content found, returning empty sources');
-    return { originalSources: [] };
+    return { 
+      originalSources: [], 
+      fullContent: result?.fullContent, //added fullContent
+    };
   } catch (error) {
     console.error('Error in verifySourceCitations:', error);
     throw error;
