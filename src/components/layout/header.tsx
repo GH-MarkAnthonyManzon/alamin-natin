@@ -10,7 +10,6 @@ import {
   Scale,
   Users,
   FileCheck2,
-  Newspaper,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,6 @@ const navItems = [
   { href: "/compare", label: "Compare", icon: Scale },
   { href: "/literacy", label: "Literacy", icon: BookOpen },
   { href: "/verify", label: "Verify Sources", icon: FileCheck2 },
-  { href: "/media-guide", label: "Media Guide", icon: Newspaper }, //added media guide link
 ];
 
 export function Header() {
