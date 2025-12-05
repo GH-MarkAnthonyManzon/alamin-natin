@@ -1,8 +1,12 @@
 {
   "functions": {
     "app/actions.ts": {
-      "maxDuration": 30,
-      "memory": 1024
+      "maxDuration": 60,
+      "memory": 3008
+    },
+    "ai/flows/**/*.ts": {
+      "maxDuration": 60,
+      "memory": 3008
     }
   },
   "buildCommand": "npm run build && npx playwright install --with-deps chromium"

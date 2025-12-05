@@ -1,4 +1,4 @@
-//addded 8:52 pm 12/5/25 ADDED THE WHOLE CODE
+//addded 9:13 pm 12/5/25 ADDED THE WHOLE CODE
 
 'use server';
 
@@ -27,7 +27,8 @@ export async function verifyCitationAction(
   prevState: VerifyState,
   formData: FormData
 ): Promise<VerifyState> {
-  console.log('verifyCitationAction called'); // Debug log
+  console.log('⚡ Verification started...');
+  const overallStart = Date.now();
   
   const validatedFields = VerifyCitationSchema.safeParse({
     citationText: formData.get('citationText'),
@@ -36,52 +37,53 @@ export async function verifyCitationAction(
 
   if (!validatedFields.success) {
     const fieldErrors = validatedFields.error.flatten().fieldErrors;
-    const errorMessage =
-      fieldErrors.citationText?.[0] || fieldErrors.sourceUrl?.[0];
+    const errorMessage = fieldErrors.citationText?.[0] || fieldErrors.sourceUrl?.[0];
     return {
       error: 'Invalid input. ' + errorMessage,
     };
   }
 
   try {
-    console.log('Starting verification...'); // Debug log
-    
+    // Step 1: Fast verification (1-3 seconds with cache, 10-15 seconds without)
+    const verifyStart = Date.now();
     const result = await verifySourceCitations({
       citationText: validatedFields.data.citationText,
       sourceUrl: validatedFields.data.sourceUrl,
     });
+    console.log(`⚡ Verification: ${Date.now() - verifyStart}ms`);
     
-    console.log('Verification complete, getting AI analysis...'); // Debug log
-    
-    // Get AI analysis of the verification result
+    // Step 2: Quick AI analysis (1-3 seconds) - run AFTER verification to show results faster
+    const analysisStart = Date.now();
     const aiAnalysis = await analyzeVerificationResult(
       validatedFields.data.citationText,
       validatedFields.data.sourceUrl,
       result.originalSources,
       result.contextSnippets
     );
+    console.log(`⚡ AI Analysis: ${Date.now() - analysisStart}ms`);
+    console.log(`⚡ Total time: ${Date.now() - overallStart}ms`);
     
-    console.log('AI analysis complete:', aiAnalysis); // Debug log
-    
-    if (result && result.originalSources.length > 0) {
+    if (result?.originalSources.length > 0) {
       return {
         sources: result.originalSources,
         contextSnippets: result.contextSnippets,
         aiAnalysis,
-        message: 'Sources found successfully.',
+        message: 'Citation verified successfully.',
       };
     } else {
       return {
         sources: [],
         contextSnippets: [],
         aiAnalysis,
-        message: 'No original sources could be found for the provided text in the given URL.',
+        message: 'Citation not found in the provided source.',
       };
     }
   } catch (e) {
-    console.error('Error in verifyCitationAction:', e);
+    console.error('❌ Verification error:', e);
     return { 
-      error: 'An unexpected error occurred while verifying sources. Please try again.' 
+      error: e instanceof Error && e.message.includes('Failed to load URL')
+        ? 'Could not access the URL. Please check if it\'s publicly accessible.'
+        : 'An error occurred during verification. Please try again.' 
     };
   }
 }

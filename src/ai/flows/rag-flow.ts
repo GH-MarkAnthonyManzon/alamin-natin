@@ -1,31 +1,14 @@
+//added 9:18 pm 12/5/25 ADDED THE WHOLE CODE
+
 'use server';
 import { Document } from '@langchain/core/documents';
-import { MemoryVectorStore } from 'langchain/vectorstores/memory';
-import {
-  GoogleGenerativeAIEmbeddings,
-  ChatGoogleGenerativeAI,
-} from '@langchain/google-genai';
-import {
-  RunnablePassthrough,
-  RunnableSequence,
-} from '@langchain/core/runnables';
-import { formatDocumentsAsString } from 'langchain/util/document';
-import { StringOutputParser } from '@langchain/core/output_parsers';
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from '@langchain/core/prompts';
-// import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
 import { chromium } from 'playwright';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { createHash } from 'crypto';
 
-// Cache directory for storing fetched documents
 const CACHE_DIR = join(process.cwd(), '.cache', 'documents');
 
-// Ensure cache directory exists
 async function ensureCacheDir() {
   try {
     await fs.mkdir(CACHE_DIR, { recursive: true });
@@ -34,12 +17,11 @@ async function ensureCacheDir() {
   }
 }
 
-// Generate cache key from URL
 function getCacheKey(url: string): string {
   return createHash('md5').update(url).digest('hex');
 }
 
-// Check if cached document exists and is fresh (24 hours)
+// Cache now stores for 7 days instead of 24 hours for better performance
 async function getCachedDocument(url: string): Promise<Document[] | null> {
   try {
     await ensureCacheDir();
@@ -49,9 +31,9 @@ async function getCachedDocument(url: string): Promise<Document[] | null> {
     const stats = await fs.stat(cachePath).catch(() => null);
     if (!stats) return null;
     
-    // Check if cache is fresh (24 hours)
+    // Check if cache is fresh (7 days for better performance)
     const age = Date.now() - stats.mtimeMs;
-    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
     if (age > maxAge) {
       await fs.unlink(cachePath).catch(() => {});
       return null;
@@ -64,12 +46,10 @@ async function getCachedDocument(url: string): Promise<Document[] | null> {
       metadata: d.metadata,
     }));
   } catch (error) {
-    console.warn('Cache read error:', error);
     return null;
   }
 }
 
-// Save document to cache
 async function saveCachedDocument(url: string, docs: Document[]) {
   try {
     await ensureCacheDir();
@@ -87,57 +67,67 @@ async function saveCachedDocument(url: string, docs: Document[]) {
     
     await fs.writeFile(cachePath, JSON.stringify(data), 'utf-8');
   } catch (error) {
-    console.warn('Cache write error:', error);
-    // Don't throw - caching is optional
+    // Ignore cache write errors
   }
 }
 
-// Replace the loadWebDocument function (lines 49-75) with:
 async function loadWebDocument(url: string): Promise<Document[]> {
+  // Try cache first
+  const cached = await getCachedDocument(url);
+  if (cached) {
+    console.log('✓ Using cached document (instant)');
+    return cached;
+  }
+  
+  console.log('⚠ Cache miss - fetching with browser (slow)...');
+  
+  let browser;
   try {
-    // Try cache first
-    const cached = await getCachedDocument(url);
-    if (cached) {
-      console.log('Using cached document for:', url);
-      return cached;
-    }
-    
-    console.log('Loading web document from:', url);
-    
-    // Launch browser
-    const browser = await chromium.launch({
+    // Add timeout to browser operations
+    browser = await chromium.launch({
       headless: true,
-      args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox'],
+      args: [
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-web-security', // Faster loading
+        '--disable-features=IsolateOrigins,site-per-process', // Faster
+      ],
+      timeout: 10000, // 10 second timeout for launch
     });
     
     const page = await browser.newPage();
     
-    // Navigate and wait for content
-    await page.goto(url, { 
-      waitUntil: 'domcontentloaded',
-      timeout: 30000 
+    // Set shorter timeout and disable unnecessary resources for speed
+    await page.route('**/*', (route) => {
+      const resourceType = route.request().resourceType();
+      // Block images, fonts, media for speed - we only need text
+      if (['image', 'font', 'media'].includes(resourceType)) {
+        route.abort();
+      } else {
+        route.continue();
+      }
     });
     
-    // Extract text content
+    // Navigate with strict timeout
+    await page.goto(url, { 
+      waitUntil: 'domcontentloaded',
+      timeout: 15000 // 15 second max
+    });
+    
+    // Extract text content quickly
     const content = await page.evaluate(() => {
       // Remove script and style elements
-      const scripts = document.querySelectorAll('script, style');
+      const scripts = document.querySelectorAll('script, style, noscript');
       scripts.forEach(el => el.remove());
       
-      // Get main content (try common content containers first)
-      const selectors = [
-        'article',
-        'main',
-        '[role="main"]',
-        '.content',
-        '.article-content',
-        '.post-content',
-        'body'
-      ];
+      // Try common content containers first (faster)
+      const selectors = ['article', 'main', '[role="main"]', '.content', 'body'];
       
       for (const selector of selectors) {
         const el = document.querySelector(selector);
-        if (el && el.textContent && el.textContent.length > 100) {
+        if (el?.textContent && el.textContent.length > 100) {
           return el.textContent;
         }
       }
@@ -147,132 +137,82 @@ async function loadWebDocument(url: string): Promise<Document[]> {
     
     await browser.close();
     
-    console.log('Loaded content length:', content.length);
-    
     const docs = [new Document({
       pageContent: content.trim(),
       metadata: { source: url },
     })];
     
-    // Save to cache (fire and forget)
+    // Save to cache asynchronously (don't wait)
     saveCachedDocument(url, docs).catch(() => {});
     
     return docs;
   } catch (error) {
-    console.error('Error loading web document:', error);
-    throw new Error(`Failed to load URL: ${url}. Please check if the URL is accessible.`);
+    if (browser) {
+      await browser.close().catch(() => {});
+    }
+    console.error('Browser fetch error:', error);
+    throw new Error(`Failed to load URL: ${url}. ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 export async function ragFlow(
   question: string, 
   sourceUrl: string,
-  skipAnswer: boolean = false // Skip answer generation for speed (used in verification)
+  skipAnswer: boolean = false
 ): Promise<{ answer: string; context: Document[] }> {
   try {
-    console.log('Starting RAG flow for question:', question.substring(0, 50) + '...');
-    const webDocs = await loadWebDocument(sourceUrl);
-
-    // For verification, use fast text-based matching instead of slow semantic search
-    // This avoids API calls and timeouts
-    console.log('Using fast text-based matching for verification...');
+    console.log('Starting fast text matching...');
+    const startTime = Date.now();
     
-    // Extract meaningful keywords from the question (words longer than 3 chars)
+    const webDocs = await loadWebDocument(sourceUrl);
+    console.log(`Document loaded in ${Date.now() - startTime}ms`);
+
+    // ULTRA-FAST text matching (no AI, no embeddings)
     const questionLower = question.toLowerCase();
     const questionWords = questionLower
       .split(/\s+/)
       .filter(word => word.length > 3)
-      .filter(word => !['that', 'this', 'with', 'from', 'have', 'been', 'were', 'which', 'their', 'there'].includes(word));
+      .filter(word => !['that', 'this', 'with', 'from', 'have', 'been', 'were', 'which', 'their', 'there', 'said', 'says'].includes(word));
     
     console.log('Searching for keywords:', questionWords.slice(0, 5).join(', '));
     
-    // Optimize: Only search first 5000 chars of each document for speed
+    // Score documents by keyword matches
     const scoredDocs = webDocs.map(doc => {
-      const content = doc.pageContent.substring(0, 5000).toLowerCase();
+      const content = doc.pageContent.toLowerCase();
       let score = 0;
       let matchedWords = 0;
       
       questionWords.forEach(word => {
-        if (content.includes(word)) {
-          score += 1;
+        const count = (content.match(new RegExp(word, 'g')) || []).length;
+        if (count > 0) {
+          score += count;
           matchedWords += 1;
         }
       });
       
       // Bonus for matching multiple unique words
       const matchRatio = matchedWords / Math.max(questionWords.length, 1);
-      score += matchRatio * 5;
+      score += matchRatio * 10;
       
       return { doc, score, matchedWords };
     });
     
-    // Sort by score and take top matches
+    // Sort and filter
     scoredDocs.sort((a, b) => b.score - a.score);
     const context = scoredDocs
-      .filter(item => item.score > 0 || item.matchedWords > 0)
-      .slice(0, 5)
+      .filter(item => item.score > 0)
+      .slice(0, 3)
       .map(item => item.doc);
     
-    console.log('Found', context.length, 'matching documents using text search');
+    console.log(`Found ${context.length} matches in ${Date.now() - startTime}ms`);
     
-    // If no matches found, return all documents as fallback (they all came from the source URL)
-    if (context.length === 0) {
-      console.log('No text matches found, returning all documents as fallback');
-      context.push(...webDocs.slice(0, 5));
-    }
-
-    // Skip answer generation for verification (biggest speedup!)
-    let answer = '';
-    if (!skipAnswer && context.length > 0) {
-      // Only generate answer if explicitly requested (not for verification)
-      console.log('Generating answer...');
-      try {
-        if (!process.env.GEMINI_API_KEY) {
-          throw new Error('GEMINI_API_KEY is not set in the environment.');
-        }
-        
-        const prompt = ChatPromptTemplate.fromMessages([
-          SystemMessagePromptTemplate.fromTemplate(
-            `Answer the following question based only on the provided context:\n\n<context>\n{context}\n</context>`
-          ),
-          HumanMessagePromptTemplate.fromTemplate('Question: {question}'),
-        ]);
-
-        const model = new ChatGoogleGenerativeAI({
-          apiKey: process.env.GEMINI_API_KEY,
-          modelName: 'gemini-1.5-flash-latest',
-        });
-        
-        const chain = RunnableSequence.from([
-          {
-            context: async () => {
-              return formatDocumentsAsString(context);
-            },
-            question: new RunnablePassthrough(),
-          },
-          prompt,
-          model,
-          new StringOutputParser(),
-        ]);
-
-        answer = await chain.invoke(question);
-        console.log('Answer generated, length:', answer.length);
-      } catch (answerError) {
-        console.warn('Answer generation failed, but continuing with context:', answerError);
-        // Continue without answer - context is what we need for verification
-      }
-    } else if (skipAnswer) {
-      console.log('Skipping answer generation for speed (verification mode)');
-    }
-
+    // Return immediately - no AI answer generation for speed
     return {
-      answer: answer,
-      context: context,
-    };  
+      answer: '',
+      context: context.length > 0 ? context : webDocs.slice(0, 1),
+    };
   } catch (error) {
     console.error('Error in ragFlow:', error);
     throw error;
   }
 }
-
-
