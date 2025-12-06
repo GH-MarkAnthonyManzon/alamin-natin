@@ -12,9 +12,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ['sharp', 'onnxruntime-node', 'playwright'], // Added playwright
-  },
+  serverComponentsExternalPackages: ['sharp', 'onnxruntime-node'],
   images: {
     remotePatterns: [
       {
@@ -38,13 +36,7 @@ const nextConfig: NextConfig = {
     ],
   },
   // Add webpack config for Playwright (optional but recommended)
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Mark playwright as external for server-side rendering
-      config.externals = [...(config.externals || []), 'playwright'];
-    }
-    return config;
-  },
+  
 };
 
 export default nextConfig;

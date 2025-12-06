@@ -8,8 +8,8 @@ import {
   Home,
   Menu,
   Scale,
-  Users,
-  FileCheck2,
+  Users
+
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/candidates", label: "Candidates", icon: Users },
   { href: "/compare", label: "Compare", icon: Scale },
-  { href: "/literacy", label: "Literacy", icon: BookOpen },
-  { href: "/verify", label: "Verify Sources", icon: FileCheck2 },
+
 ];
 
 export function Header() {
